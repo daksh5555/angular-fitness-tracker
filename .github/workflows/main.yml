@@ -1,0 +1,37 @@
+name: Create production build and deploy to gh-pages
+
+on:
+  push:
+    branches:
+      - master  # Update to 'main' or the correct branch if different
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+
+      - name: Install Angular CLI and dependencies
+        run: |
+          npm install -g @angular/cli@latest
+          npm install
+
+      - name: Build Angular project
+        run: |
+          ng build --prod --base-href="/angular-fitness-tracker/"
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@releases/v2
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BASE_BRANCH: master  # Update if your source branch is different
+          BRANCH: gh-pages
+          FOLDER: dist/angular-fitness-tracker
